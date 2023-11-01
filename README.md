@@ -23,7 +23,13 @@ django-admin startproject <PROJECT_NAME>
 ### Start Django Dev Server
 
 ```bash
-python mange.py runserver
+python manage.py runserver
 ```
 
 Open http://127.0.0.1:8000/ in browser.
+
+### Create Django Apps ~= Modules
+
+```bash
+python manage.py startapp <APP_OR_MODULE_NAME>
+```
