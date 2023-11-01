@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class UrlsAndViewsModuleConfig(AppConfig):
+class Module101Config(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
-    name = 'urls_and_views_module'
+    name = 'module_101'
