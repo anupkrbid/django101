@@ -6,18 +6,35 @@ from django.urls import NoReverseMatch, reverse
 
 
 def index(request):
-    html_response = """
-        <ul>
-            <li><a href="even">Even</a></li>
-            <li><a href="odd">Odd</a></li>
-            <li><a href="-1">-1</a></li>
-            <li><a href="0">0</a></li>
-            <li><a href="1">1</a></li>
-            <li><a href="2">2</a></li>
-            <li><a href="3">3</a></li>
-            <li><a href="4">4</a></li>
-        </ul>
-    """
+    string_urls = {
+        "even": "Go to Even Path",
+        "odd": "Go to Odd Path",
+        "qwerty": "Go to Invalid Path (qwerty)",
+    }
+    no_urls = {
+        "-1": "Go to Invalid Path (-1)",
+        "0": "Go to Even Path (0)",
+        "1": "Go to Odd Path (1)",
+        "2": "Go to Even Path (2)",
+        "3": "Go to Odd Path (3)"
+    }
+    list_items = ""
+    list_string_urls = list(string_urls.keys())
+    list_no_urls = list(no_urls.keys())
+
+    for item in list_string_urls:
+        # item.capitalize()
+        path = reverse("path-view-type", args=[item])
+        list_items += f"<li><a href=\"{path}\">{string_urls[item]}</a></li>"
+
+    for item in list_no_urls:
+        try:
+            path = reverse("path-view-no", args=[item])
+        except:
+            path = reverse("path-invalid-view-type")
+        list_items += f"<li><a href=\"{path}\">{no_urls[item]}</a></li>"
+
+    html_response = f"""<ul>{list_items}</ul>"""
     return HttpResponse(html_response)
 
 
@@ -27,7 +44,7 @@ def view_type(request, view_type):
     elif (view_type == "odd"):
         return HttpResponse("Odd View")
     else:
-        redirect_path = reverse("invalid-view-type")
+        redirect_path = reverse("path-invalid-view-type")
         return HttpResponseRedirect(redirect_path)
 
 
@@ -39,10 +56,10 @@ def view_no(request, view_no):
     view_type = "even" if view_no % 2 == 0 else "odd"
     try:
         redirect_path = reverse(
-            "view-type", args=[view_type])  # views/(even/odd)
+            "path-view-type", args=[view_type])  # views/(even/odd)
         return HttpResponseRedirect(redirect_path)
     except NoReverseMatch:
-        redirect_path = reverse("invalid-view-type")
+        redirect_path = reverse("path-invalid-view-type")
         return HttpResponseRedirect(redirect_path)
 
 

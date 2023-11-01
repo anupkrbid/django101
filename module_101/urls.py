@@ -3,7 +3,8 @@ from . import views
 
 urlpatterns = [
     path("", views.index),
-    path("invalid-view-type", views.invalid_view_type, name="invalid-view-type"),
-    path("<int:view_no>", views.view_no),
-    path("<str:view_type>", views.view_type, name="view-type"),
+    path("invalid-view-type", views.invalid_view_type,
+         name="path-invalid-view-type"),
+    path("<int:view_no>", views.view_no, name="path-view-no"),
+    path("<str:view_type>", views.view_type, name="path-view-type"),
 ]
