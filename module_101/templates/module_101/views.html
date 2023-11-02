@@ -1,16 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Views</title>
-  </head>
-  <body>
-    <h1>View Paths</h1>
-    <ul>
-      {% for view in views %}
-      <li><a href="{{view.path}}">{{view.text}}</a></li>
-      {% endfor %}
-    </ul>
-  </body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}
+  Views
+{% endblock %}
+  
+{% block body %}
+  {% include "partials/header.html" with active_page="Views" %}
+  <h1>View Paths</h1>
+  <ul>
+    {% for view in string_views %}
+    <li><a href="{% url "path-view-type" view_type=view.arg %}">{{ view.text|lower|title }}</a></li>
+    {% endfor %}
+
+    {% for view in no_views %}
+    <li><a href="{{ view.path }}">{{ view.text|lower|title }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+
