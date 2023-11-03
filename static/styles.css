@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+
+/* @font-face {
+  font-family: "SAMAN";
+  src: url("SAMAN.eot");
+  src: url("SAMAN.eot") format("embedded-opentype"),
+    url("SAMAN.woff2") format("woff2"),
+    url("SAMAN.woff") format("woff"),
+    url("SAMAN.ttf") format("truetype"),
+    url("SAMAN.svg#SAMAN") format("svg");
+} */
+
+html {
+  /* font-family: "SAMAN"; */
+  font-family: 'Roboto Mono', monospace;
+  font-size: 2rem;
+}
+
+body {
+  margin: 0;
+}
+
