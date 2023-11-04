@@ -1,0 +1,28 @@
+{% extends "base.html" %} 
+
+{% load static %}
+
+{% block css_refs %}
+  <link href="{% static "user/user.css" %}">
+{% endblock  %}
+
+
+{% block title %} Users {% endblock %}
+
+{% block body %}
+  {% include "partials/header.html" with active_page="Users" %}
+  <h1>User</h1>
+  <div>User Id: {{id}}</div>
+  {% comment %} <ul>
+    {% for view in string_views %}
+    <li><a href="{% url "path-view-type" view_type=view.arg %}">{{ view.text|lower|title }}</a></li>
+    {% endfor %}
+
+    {% for view in no_views %}
+    <li><a href="{{ view.path }}">{{ view.text|lower|title }}</a></li>
+    {% endfor %}
+  </ul> {% endcomment %}
+
+{% endblock  %}
+
+

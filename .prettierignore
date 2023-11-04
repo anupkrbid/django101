@@ -1,1 +1,2 @@
-.html
+# Ignore all HTML files:
+**/*.html
