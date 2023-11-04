@@ -6,7 +6,7 @@
 
 Install latest version of Python from https://www.python.org/downloads/ which is v3.12.0 at the line of creating this project.
 
-### Install Django & Upgrade PIP
+### Install [Django](https://docs.djangoproject.com/en/4.2/) & Upgrade PIP
 
 ```bash
 python -m pip install Django
@@ -14,13 +14,13 @@ python -m pip install Django
 python -m pip install --upgrade pip
 ```
 
-### Create a Django Project
+### Create Project
 
 ```bash
 django-admin startproject <PROJECT_NAME>
 ```
 
-### Start Django Dev Server
+### Start Dev Server
 
 ```bash
 python manage.py runserver
@@ -28,7 +28,7 @@ python manage.py runserver
 
 Open http://127.0.0.1:8000/ in browser.
 
-### Create Django Apps ~= Modules
+### Create Apps ~= Modules
 
 ```bash
 python manage.py startapp <APP_OR_MODULE_NAME>
@@ -58,7 +58,7 @@ URLconfs/Routes: URL-Action mappings which ensure that certain results are "achi
 
 The logic (function or class) that is executed for different URLs (and HTTP methods). The code handles (evaluates, load and prepare data or run any other business logic) requests and returns responses (eg, HTML).
 
-### Models
+## Models
 
 Create a db.squalite3 file in the project root directory
 
@@ -135,11 +135,3 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> print(data) # this is more performant because django caches the data and if this is printed muktiple times it only hits the db once unless the db data has changed, which is not the case if we directly do `print(<MODEL_NAME>.objects.filter(<GENERIC_FIELD_NAME>="<FIELD_VALUE>"))`
 
 ```
-
-[Making Queries | Django Documentation](https://docs.djangoproject.com/en/4.2/topics/db/queries/)
-
-Besides operations on individual model instances (i.e. deleting one model instance, updating one model instance etc), you can also perform bulk operations:
-
-- [Bulk Create | Django Documentation](https://docs.djangoproject.com/en/3.0/ref/models/querysets/#bulk-create)
-- [Bulk Update | Django Documentation](https://docs.djangoproject.com/en/3.0/ref/models/querysets/#bulk-update)
-- [Bulk Delete | Django Documentation](https://docs.djangoproject.com/en/3.1/topics/db/queries/#deleting-objects)
