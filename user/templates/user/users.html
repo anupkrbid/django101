@@ -3,7 +3,7 @@
 {% load static %}
 
 {% block css_refs %}
-  <link href="{% static "user/users.css" %}">
+  <link rel="stylesheet" href="{% static "user/users.css" %}">
 {% endblock  %}
 
 
@@ -12,10 +12,22 @@
 {% block body %}
   {% include "partials/header.html" with active_page="Users" %}
   <h1>Users</h1>
+  <strong>Total Count: {{total_users}}</strong>
+  <strong>Average Age: {{aggregate_age.age__avg}}</strong>
+  <strong>Max Age: {{aggregate_age.age__max}}</strong>
+  <strong>Min Age: {{aggregate_age.age__min}}</strong>
   <ul>
-    {% for user in users %}
-    <li><a href="{% url "specific-user-path" user_id=user.id %}">{{ user.name|title }}</a></li>
-    {% endfor %}
+    {% if users|length > 0 %}
+      {% for user in users %}
+      {% comment %} <li><a href="{% url "specific-user-path" user_id=user.id %}">{{ user.name|title }}</a></li> {% endcomment %}
+      {% comment %} <li><a href="{% url "specific-user-path" user.id %}">{{ user.name|title }}</a></li> {% endcomment %}
+      <li><a href="{{user.get_absolute_url}}">{{ user.name|title }}</a></li>
+
+      {% endfor %}
+    {% else %}
+      <div>No Users Found</div>
+    {% endif %}
+   
   </ul> 
 
 {% endblock  %}
