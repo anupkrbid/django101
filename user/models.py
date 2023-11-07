@@ -14,12 +14,12 @@ class User(models.Model):
     slug = models.SlugField(default="", null=False, db_index=True)
 
     def __str__(self):
-        return f"{self.name}({self.email}) - {self.age} - {self.slug}"
+        return f"{self.name} ({self.email}) - {self.age} - {self.slug}"
 
-    def save(self, *args, **kwargs):
-        # self.slug = slugify(f"{self.name} {self.id}") # id not present before save
-        self.slug = slugify(self.name)
-        super().save(*args, **kwargs)
+    # def save(self, *args, **kwargs):
+    #     # self.slug = slugify(f"{self.name} {self.id}") # id not present before save
+    #     self.slug = slugify(self.name)
+    #     super().save(*args, **kwargs)
 
     def get_absolute_url(self):
         # return reverse("specific-user-path-id", kwargs={"pk": self.pk})

@@ -138,3 +138,17 @@ Type "help", "copyright", "credits" or "license" for more information.
 >>> print(data) # this is more performant because django caches the data and if this is printed muktiple times it only hits the db once unless the db data has changed, which is not the case if we directly do `print(<MODEL_NAME>.objects.filter(<GENERIC_FIELD_NAME>="<FIELD_VALUE>"))`
 
 ```
+
+## Admin
+
+```bash
+python manage.py createsuperuser
+Username (leave blank to use 'anupk'): <USERNAME>
+Email address: <EMAIL>
+Password: <PASSWORD>
+Password (again): <PASSWORD>
+The password is too similar to the username.
+This password is too short. It must contain at least 8 characters.
+Bypass password validation and create user anyway? [y/N]: y
+Superuser created successfully.
+```
