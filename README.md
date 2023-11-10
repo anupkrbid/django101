@@ -152,3 +152,81 @@ This password is too short. It must contain at least 8 characters.
 Bypass password validation and create user anyway? [y/N]: y
 Superuser created successfully.
 ```
+
+## Cross Model Query
+
+```bash
+python manage.py shell
+Python 3.12.0 (tags/v3.12.0:0fb18b0, Oct  2 2023, 13:03:39) [MSC v.1935 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+>>> from user.models import User, PhoneNo, Passport, Access
+>>> ab = User.objects.get(pk="1")
+>>> ab
+<User: Absinthe Minded (absintheminded@yopmail.com) - 28 - absinthe-minded>
+>>> ph1 = PhoneNo(country_code="+91", number="9866098765", user=ab)
+>>> ph1.save()
+>>> ph11 = PhoneNo.objects.get(pk="1")
+>>> ph11.user
+<User: Absinthe Minded (absintheminded@yopmail.com) - 28 - absinthe-minded>
+>>> p = Passport(number="3518561",  user=ab)
+>>> p.save()
+>>> PhoneNo.objects.filter(user__age="28")
+<QuerySet [<PhoneNo: PhoneNo object (1)>]>
+>>> PhoneNo.objects.filter(user__age__gt="25")
+<QuerySet [<PhoneNo: PhoneNo object (1)>]>
+>>> ab3 = User.objects.get(pk="1")
+>>> ab3.phone_nos.all()
+<QuerySet [<PhoneNo: PhoneNo object (1)>]>
+>>> ab3.phone_nos.get(country_code="+91")
+<PhoneNo: PhoneNo object (1)>
+>>> am = User.objects.get(pk="1")
+>>> a1 = Access(type="READ")
+>>> am.access.add(a1)
+>>> a1.save()
+>>> am.access.add(a1)
+```
+
+## Circular Relations & Lazy Relations
+
+Sometimes, you might have two models that depend on each other - i.e. you end up with a circular relationship.
+
+Or you have a model that has a relation with itself.
+
+Or you have a model that should have a relation with some built-in model (i.e. built into Django) or a model defined in another application.
+
+Below, you find examples for all three cases that include Django's solution for these kinds of "problems": Lazy relationships. You can also check out the official docs in addition.
+
+1. Two models that have a circular relationship
+
+```python
+class Product(models.Model):
+  # ... other fields ...
+  last_buyer = models.ForeignKey('User')
+
+class User(models.Model):
+  # ... other fields ...
+  created_products = models.ManyToManyField('Product')
+```
+
+In this example, we have multiple relationships between the same two models. Hence we might need to define them in both models. By using the model name as a string instead of a direct reference, Django is able to resolve such dependencies.
+
+2. Relation with the same model
+
+```python
+class User(models.Model):
+  # ... other fields ...
+  friends = models.ManyToManyField('self')
+```
+
+The special self keyword (used as a string value) tells Django that it should form a relationship with (other) instances of the same model.
+
+3. Relationships with other apps and their models (built-in or custom apps)
+
+```python
+class Review(models.Model):
+  # ... other fields ...
+  product = models.ForeignKey('store.Product') # '<appname>.<modelname>'
+```
+
+You can reference models defined in other Django apps (no matter if created by you, via python manage.py startapp <appname> or if it's a built-in or third-party app) by using the app name and then the name of the model inside the app.
