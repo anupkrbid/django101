@@ -6,6 +6,10 @@
   <link rel="stylesheet" href="{% static "user/users.css" %}">
 {% endblock  %}
 
+{% block js_refs %}
+  <script src="{% static "user/users.js" %}"></script>
+{% endblock  %}
+
 
 {% block title %} Users {% endblock %}
 
@@ -16,11 +20,53 @@
   <strong>Average Age: {{aggregate_age.age__avg}}</strong>
   <strong>Max Age: {{aggregate_age.age__max}}</strong>
   <strong>Min Age: {{aggregate_age.age__min}}</strong>
+  <hr>
+  <dialog>
+    <button autofocus>Close</button>
+
+    <form>
+      <div>
+        <label for="name">Name</label>
+        <input id="name" name="name" type="text">
+      </div>
+
+      <div> 
+        <label for="email">Email</label>
+        <input id="email" name="email" type="text">
+      </div>     
+      
+      <div> 
+        <label for="age">Age</label>
+        <input id="age" name="age" type="text">
+      </div>
+     
+      <div> 
+        <label for="access">Access</label>
+        <select id="access" name="access">
+          <option value="">-----</option>
+          <option value="">READ</option>
+          <option value="">UPDATE</option>
+          <option value="">DELETE</option>
+        </select>
+      </div>
+     
+      <div> 
+        <label for="passport">Passport</label>
+        <input id="passport" name="passport" type="text">
+      </div>
+      
+      <button type="submit">Submit</button>
+    </form>
+
+  </dialog>
+  
+  <button>Add new user</button>
   <ul>
     {% if users|length > 0 %}
       {% for user in users %}
       {% comment %} <li><a href="{% url "specific-user-path" user_id=user.id %}">{{ user.name|title }}</a></li> {% endcomment %}
       {% comment %} <li><a href="{% url "specific-user-path" user.id %}">{{ user.name|title }}</a></li> {% endcomment %}
+
       <li><a href="{{user.get_absolute_url}}">{{ user.name|title }}</a></li>
 
       {% endfor %}
