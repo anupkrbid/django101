@@ -24,8 +24,17 @@
   <dialog>
     <button autofocus>Close</button>
 
-    <form>
-      <div>
+    <form method="POST" action="new">
+      {% csrf_token %} 
+      {% comment %} {{ form }} {% endcomment %}
+      <div class="form-control {% if form.name.errors %} errors {% endif %}">
+        {{ form.name.label_tag }}
+        {{ form.name }}
+        {{ form.name.errors }}
+      </div>
+      <button type="submit">Submit</button>
+      
+      {% comment %} <div>
         <label for="name">Name</label>
         <input id="name" name="name" type="text">
       </div>
@@ -37,7 +46,7 @@
       
       <div> 
         <label for="age">Age</label>
-        <input id="age" name="age" type="text">
+        <input id="age" name="age" type="number">
       </div>
      
       <div> 
@@ -52,10 +61,10 @@
      
       <div> 
         <label for="passport">Passport</label>
-        <input id="passport" name="passport" type="text">
-      </div>
+        <input id="passport" name="passport" type="number">
+      </div> 
       
-      <button type="submit">Submit</button>
+      <button type="submit">Submit</button> {% endcomment %}
     </form>
 
   </dialog>
