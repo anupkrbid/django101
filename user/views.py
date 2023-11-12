@@ -3,7 +3,7 @@ from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.db.models import Avg, Min, Max
 
-from .models import User
+from .models import User, Access
 from .forms import UserForm
 
 # Create your views here.
@@ -57,9 +57,26 @@ def create_user(request):
     form = UserForm(request.POST)
 
     if (form.is_valid()):
-        print(form.cleaned_data)
+        # clean_data = form.cleaned_data
+        # access = Access.objects.get(type=clean_data["access"])
+        # user = User(name=clean_data["name"], email=clean_data["email"], age=clean_data["age"],
+        #             access=access, passport=clean_data["passport"])
+        form.save()
         redirect_path = reverse("specific-user-path-id", args=[1])
         return HttpResponseRedirect(redirect_path)
 
     redirect_path = reverse("all-users-path")
+    return HttpResponseRedirect(redirect_path)
+
+
+def update_user(request, user_id):
+    existing_user = User.objects.get(pk=user_id)
+    form = UserForm(request.POST, instance=existing_user)  # updating
+
+    if (form.is_valid()):
+        form.save()
+        redirect_path = reverse("specific-user-path-id", args=[user_id])
+        return HttpResponseRedirect(redirect_path)
+
+    redirect_path = reverse("specific-user-path-id", args=[user_id])
     return HttpResponseRedirect(redirect_path)
