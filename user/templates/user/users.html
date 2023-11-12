@@ -27,44 +27,14 @@
     <form method="POST" action="new">
       {% csrf_token %} 
       {% comment %} {{ form }} {% endcomment %}
-      <div class="form-control {% if form.name.errors %} errors {% endif %}">
-        {{ form.name.label_tag }}
-        {{ form.name }}
-        {{ form.name.errors }}
-      </div>
+      {% for field in form %}
+        <div class="form-control {% if field.errors %} errors {% endif %}">
+          {{ field.label_tag }}
+          {{ field }}
+          {{ field.errors }}
+        </div>
+      {% endfor %}
       <button type="submit">Submit</button>
-      
-      {% comment %} <div>
-        <label for="name">Name</label>
-        <input id="name" name="name" type="text">
-      </div>
-
-      <div> 
-        <label for="email">Email</label>
-        <input id="email" name="email" type="text">
-      </div>     
-      
-      <div> 
-        <label for="age">Age</label>
-        <input id="age" name="age" type="number">
-      </div>
-     
-      <div> 
-        <label for="access">Access</label>
-        <select id="access" name="access">
-          <option value="">-----</option>
-          <option value="">READ</option>
-          <option value="">UPDATE</option>
-          <option value="">DELETE</option>
-        </select>
-      </div>
-     
-      <div> 
-        <label for="passport">Passport</label>
-        <input id="passport" name="passport" type="number">
-      </div> 
-      
-      <button type="submit">Submit</button> {% endcomment %}
     </form>
 
   </dialog>
