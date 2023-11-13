@@ -2,7 +2,6 @@ from django.shortcuts import render, get_object_or_404
 from django.http import Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.db.models import Avg, Min, Max
-from django.views import View
 
 from .models import User, Access
 from .forms import UserForm
@@ -81,9 +80,3 @@ def update_user(request, user_id):
 
     redirect_path = reverse("specific-user-path-id", args=[user_id])
     return HttpResponseRedirect(redirect_path)
-
-
-# class UserView(View):
-#     def get(self, request):
-
-#     def post(self, request):

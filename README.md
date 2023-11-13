@@ -230,3 +230,183 @@ class Review(models.Model):
 ```
 
 You can reference models defined in other Django apps (no matter if created by you, via python manage.py startapp <appname> or if it's a built-in or third-party app) by using the app name and then the name of the model inside the app.
+
+## Class Views
+
+### View Example
+
+```py
+# urls.py
+from . import views
+
+urlpatterns = [
+    path("", views.SampleView.as_view(), name="all-samples-path"),
+]
+```
+
+```py
+# views.py
+from django.views import View
+
+class SampleView(View):
+    def get(self, request):
+        return render(request, "sample/sample.html", {
+            "samplae_data": data
+        })
+
+    def post(self, request):
+```
+
+### Template View Example
+
+```py
+# urls.py
+from . import views
+
+urlpatterns = [
+    path("", views.SampleView.as_view(), name="all-samples-path"),
+]
+```
+
+```py
+# views.py
+from django.views.generic.base import TemplateView
+
+class SampleView(TemplateView):
+    template_name = "sample/sample.html"
+
+    def get_context_data(self, **kwargs: Any) -> dict[str, Any]:
+        sample_id = kwargs["id"] # id passes as param
+        context = super().get_context_data(**kwargs)
+        context["template_data"] = "some data to show in template"
+        return context
+```
+
+### List View Example
+
+```py
+# urls.py
+from . import views
+
+urlpatterns = [
+    path("", views.SampleView.as_view(), name="all-samples-path"),
+]
+```
+
+```py
+# views.py
+from django.views.generic import ListView
+
+class SampleView(ListView):
+    template_name = "sample/sample.html"
+    model = SampleModel
+    context_object_name = "samples" # use in tample to loop over the list data
+
+    def get_queryset(self):
+        base_query = super().get_query_set()
+        data = base_query.filter(rating__gt=4)
+        return data
+```
+
+### Detail View Example
+
+```py
+# urls.py
+from . import views
+
+urlpatterns = [
+    path("<int:pk>", views.SampleView.as_view(), name="single-sample-path"),
+]
+```
+
+```py
+# views.py
+from django.views.generic import DetailView
+from .models import SampleModel
+
+class SampleView(DetailView):
+    template_name = "sample/sample.html"
+    model = SampleModel
+    context_object_name = "sample" # sets the model name or `object` and takes the get context from the param in urls set as `samples/<int:pk>`
+```
+
+### Form View Example
+
+```html
+<!-- sample.html -->
+<form method="POST" action="/">
+  {% csrf_token %} {% comment %} {{ form }} {% endcomment %} {% for field in
+  form %}
+  <div class="form-control {% if field.errors %} errors {% endif %}">
+    {{ field.label_tag }} {{ field }} {{ field.errors }}
+  </div>
+  {% endfor %}
+  <button type="submit">Submit</button>
+</form>
+```
+
+```py
+# urls.py
+from . import views
+
+urlpatterns = [
+    path("<int:pk>", views.SampleView.as_view(), name="single-sample-path"),
+]
+```
+
+```py
+# views.py
+from django.views.generic.edit import FormView
+from .forms import SampleForm
+
+class SampleView(FormView):
+    form_class = SampleForm
+    template_name = "sample/sample.html"
+    success_url = "/success"
+
+    def form_valid(self, form):
+        form.save()
+        return super().form_valid(form)
+```
+
+### Create View Example
+
+```html
+<!-- sample.html -->
+<form method="POST" action="/">
+  {% csrf_token %} {% comment %} {{ form }} {% endcomment %} {% for field in
+  form %}
+  <div class="form-control {% if field.errors %} errors {% endif %}">
+    {{ field.label_tag }} {{ field }} {{ field.errors }}
+  </div>
+  {% endfor %}
+  <button type="submit">Submit</button>
+</form>
+```
+
+```py
+# urls.py
+from . import views
+
+urlpatterns = [
+    path("<int:pk>", views.SampleView.as_view(), name="single-sample-path"),
+]
+```
+
+```py
+# views.py
+from django.views.generic.edit import CreateView
+from .forms import SampleForm
+from .models import SampleModel
+
+class SampleView(CreateView):
+    model = SampleModel
+    form_class = SampleForm # optional or set fields like below, but this gives more control as we cannot set label and all here ike we can in Custom Form Models
+    # fields = "__all__" # same as custom SampleForm
+    template_name = "sample/sample.html"
+    success_url = "/success"
+```
+
+### Update & Delete View is also Possible
+
+https://docs.djangoproject.com/en/4.2/ref/class-based-views/generic-editing/
