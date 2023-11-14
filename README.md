@@ -410,3 +410,252 @@ class SampleView(CreateView):
 ### Update & Delete View is also Possible
 
 https://docs.djangoproject.com/en/4.2/ref/class-based-views/generic-editing/
+
+## File Upload
+
+```py
+# urls.py
+from . import views
+
+urlpatterns = [
+    path("", views.CreateProfile.as_view(), name="create-profile-path"),
+    path("list", views.ViewProfile.as_view(), name="view-profile-path")
+]
+```
+
+### Saving Using View
+
+```html
+<!-- templates/profile/index.html -->
+<form action="/profile/" method="POST" enctype="multipart/form-data">
+  {% csrf_token %}
+  <input type="file" name="image" />
+  <button>Upload</button>
+</form>
+```
+
+```py
+# views.py
+from django.views import View
+from django.http import HttpResponseRedirect
+
+store_file(file):
+    with open("temp/image.jpeg", "wb+") as dest:
+        for chunk in file.chunks()
+            dest.write(chunk)
+
+class CreateProfileView(View):
+    def get(self, request):
+        return render(request, "profile/index.html")
+
+    def post(self, request):
+        store_file(request.FILES["image"])
+        return HttpResponseRedirect("/profile")
+```
+
+### Saving Using Form
+
+```html
+<!-- templates/profile/index.html -->
+<form action="/profile/" method="POST" enctype="multipart/form-data">
+  {% csrf_token %} {{ form }}
+  <button>Upload</button>
+</form>
+```
+
+```py
+# forms.py
+from django import forms
+
+class ProfileForm(forms.Form):
+    user_image = forms.FileField()
+
+```
+
+```py
+# views.py
+from django.views import View
+from django.http import HttpResponseRedirect
+
+from .forms import ProfileForm
+
+store_file(file):
+    with open("temp/image.jpeg", "wb+") as dest:
+        for chunk in file.chunks()
+            dest.write(chunk)
+
+class CreateProfileView(View):
+    def get(self, request):
+        form = ProfileForm()
+        return render(request, "profile/index.html", {
+            "form": form
+        })
+
+    def post(self, request):
+        submitted_form = ProfileForm(request.POST, request.FILES)
+
+        if (submitted_form.is_valid()):
+            store_file(request.FILES["image"])
+            return HttpResponseRedirect("/profile")
+
+        return render(request, "profile/index.html", {
+            "form": submitted_form
+        })
+```
+
+### Saving Using Model
+
+```html
+<!-- templates/profile/index.html -->
+<form action="/profile/" method="POST" enctype="multipart/form-data">
+  {% csrf_token %} {{ form }}
+  <button>Upload</button>
+</form>
+```
+
+```py
+# models.py
+from django.db import models
+
+class Profile(models.Model):
+    image = models.FileField(upload_to="files") # files folder will be created in MEDIA_ROOT
+    # image = models.ImageField(upload_to="images") # django will only accespt images and not pdfs and docs # need to install Pillow "python -m pip insll Pillow"
+```
+
+```py
+# settings.py
+MEDIA_ROOT = BASE_DIR / "uploads"
+MEDIA_URL = "/user-media/"
+```
+
+```py
+# forms.py
+from django import forms
+
+class ProfileForm(forms.Form):
+    user_image = forms.FileField()
+    # user_image = forms.ImageField()
+
+```
+
+```py
+# views.py
+from django.views import View
+from django.http import HttpResponseRedirect
+
+from .forms import ProfileForm
+from .models import Profile
+
+class CreateProfileView(View):
+    def get(self, request):
+        form = ProfileForm()
+        return render(request, "profile/index.html", {
+            "form": form
+        })
+
+    def post(self, request):
+        submitted_form = ProfileForm(request.POST, request.FILES)
+
+        if (submitted_form.is_valid()):
+            profile = Profile(image=request.FILES["image"])
+            profile.save()
+            return HttpResponseRedirect("/profile")
+
+        return render(request, "profile/index.html", {
+            "form": submitted_form
+        })
+```
+
+### Saving Use Create View
+
+```html
+<!-- templates/profile/index.html -->
+<form action="/profile/" method="POST" enctype="multipart/form-data">
+  {% csrf_token %} {{ form }}
+  <button>Upload</button>
+</form>
+```
+
+```py
+# models.py
+from django.db import models
+
+class Profile(models.Model):
+    image = models.FileField(upload_to="files") # files folder will be created in MEDIA_ROOT
+    # image = models.ImageField(upload_to="images") # django will only accespt images and not pdfs and docs # need to install Pillow "python -m pip insll Pillow"
+```
+
+```py
+# settings.py
+MEDIA_ROOT = BASE_DIR / "uploads"
+```
+
+```py
+# views.py
+from django,views,generic.edit import CreateView
+from .models import Profile
+
+class CreateProfileView(CreateView):
+    template_name = "profile/index.html"
+    model = Profile
+    fields = "__all__"
+    success_url = "/profiles"
+```
+
+### Serving Use List View
+
+```html
+<!-- templates/profile/index.html -->
+<ul>
+  {% for profile in profiles %}
+  <li>
+    <img src="{{ profile.image.url }}" />
+  </li>
+  {% endfor %}
+</ul>
+```
+
+```py
+# models.py
+from django.db import models
+
+class Profile(models.Model):
+    image = models.FileField(upload_to="files") # files folder will be created in MEDIA_ROOT
+    # image = models.ImageField(upload_to="images") # django will only accespt images and not pdfs and docs # need to install Pillow "python -m pip insll Pillow"
+```
+
+```py
+# settings.py
+MEDIA_ROOT = BASE_DIR / "uploads"
+MEDIA_URL = "/user-media/"
+
+from django.conf import settings
+from django.contrib import admin
+from django.conf.urls.static import static
+from django.urls import path, include
+
+urlpatterns = [
+    path('profile/', include("profile.urls")),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) # needed to allow django to server files, the mapping of the url to the actual path on the file system is done by this static function call in the root settings urls.py
+```
+
+```py
+# forms.py
+from django import forms
+
+class ProfileForm(forms.Form):
+    user_image = forms.FileField()
+    # user_image = forms.ImageField()
+
+```
+
+```py
+# views.py
+from django.views.generic import ListView
+from .models import Profile
+
+class ViewProfileView(ListView):
+    template_name = "profile/index.html"
+    model = Profile
+    context_object_name = "profiles"
+```
