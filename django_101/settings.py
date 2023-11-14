@@ -121,9 +121,6 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
-MEDIA_ROOT = BASE_DIR / "uploads"
-MEDIA_URL = "/user-media/"
-
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
@@ -132,3 +129,10 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# File Upload
+# https://docs.djangoproject.com/en/4.2/ref/settings/#media-root
+
+MEDIA_ROOT = BASE_DIR / "uploads"
+
+MEDIA_URL = "/user-media/"

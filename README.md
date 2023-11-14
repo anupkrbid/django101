@@ -659,3 +659,45 @@ class ViewProfileView(ListView):
     model = Profile
     context_object_name = "profiles"
 ```
+
+## (Sessions)[https://docs.djangoproject.com/en/4.2/ref/settings/#sessions]
+
+```py
+# settings.py
+
+INSTALLED_APPS = [
+    'django.contrib.sessions'
+]
+
+MIDDLEWARE = [
+    'django.contrib.sessions.middleware.SessionMiddleware'
+]
+```
+
+```py
+# urls.py
+urlpatterns = [
+    path("users/<int:user_id>", views.UserSessionView.as_view(), name="specific-user-path-id")
+]
+
+```
+
+```py
+# views.py
+
+class UserSessionView(View):
+    def get(self, request):
+        user_id = request.POST["user_id"]
+        loaded_user = User.objects.get(pk=user_id)
+        saved_session_user_id = self.request.session.get("user_id")
+        return render(request, "user/user.html", {
+            "is_user_session_saved": loaded_user.id === saved_session_user_id
+        })
+
+
+    def post(self, request):
+        user_id = request.POST["user_id"]
+        request.session["user_id"] = user_id # saves data to session, dont store objects from db just store primitive values like dictionary
+        redirect_path = reverse("specific-user-path-id", args=[user_id])
+        return HttpResponseRedirect(redirect_path)
+```
