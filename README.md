@@ -660,7 +660,7 @@ class ViewProfileView(ListView):
     context_object_name = "profiles"
 ```
 
-## (Sessions)[https://docs.djangoproject.com/en/4.2/ref/settings/#sessions]
+## [Sessions](https://docs.djangoproject.com/en/4.2/ref/settings/#sessions)
 
 ```py
 # settings.py
