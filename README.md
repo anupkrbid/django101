@@ -628,7 +628,10 @@ class Profile(models.Model):
 # settings.py
 MEDIA_ROOT = BASE_DIR / "uploads"
 MEDIA_URL = "/user-media/"
+```
 
+```py
+# urls.py
 from django.conf import settings
 from django.contrib import admin
 from django.conf.urls.static import static
@@ -701,3 +704,111 @@ class UserSessionView(View):
         redirect_path = reverse("specific-user-path-id", args=[user_id])
         return HttpResponseRedirect(redirect_path)
 ```
+
+## Deployment
+
+```py
+# settings.py
+from os import getenv
+
+INSTALLED_APP = [
+    ...
+    "storages"
+]
+SECRET_KEY = getenv("SECRET_KEY", "django-insecure-qds*nqoz^z0@%zqc65fet!w(%=#)-5783lwcdqj!j49!d#svu@")
+DEBUG = getenv("IS_DEVELOPMENT", True)
+ALLOWED_HOSTS = [getenv("APP_HOST", "localhost")]
+STATIC_ROOT = BASE_DIR / "staticfiles"
+STATIC_URL = "/static/"
+STATICFILES_DIRS = [
+    BASE_DIR / "static"
+]
+MEDIA_ROOT = BASE_DIR / "uploads"
+MEDIA_URL = "/files/"
+DATABASES = {
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": getenv("DB_NAME", BASE_DIR / "db.postgresql"),
+        "USER": getenv("DB_USER", "root"),
+        "PASSWORD": getenv("DB_PASSWORD", "toor"),
+        "HOST": getenv("DB_HOST", "some.hosted.endpoint"),
+        "PORT": getenv("DB_PORT", "5432")
+    }
+}
+AWS_STORAGE_BUCKET_NAME = getenv("AWS_STORAGE_BUCKET_NAME", "django-101")
+AWD_S3_REGION = getenv("AWS_STORAGE_BUCKET_NAME", "region")
+AWS_ACCESS_KEY_ID = getenv("AWS_ACCESS_KEY_ID", "sdfsfdsfsadfads")
+AWS_SECRET_KEY_ACCESS = getenv("AWS_SECRET_KEY_ACCESS", "dsfsdfsdfdsfsdf")
+AWS_S3_CUSTOM_DOMAIN = f"{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com"
+STATICFILES_STORARGE = "custom_storages.StaticFileStorage"
+DEFAULT_FILE_STORAGE = "custom_storages.MediaFileStorage"
+STATICFILES_FOLDER = "static"
+MEDIAFILES_FOLDER = "media"
+```
+
+```py
+# custom_storages.py
+from django.conf import settings
+from storages.backends.s3boto3 import S3Boto3Storage
+
+class StaticFileStorage(S3Boto3Storage):
+    location = settings.STATICFILES_FOLDER
+
+class MediaFileStorage(S3Boto3Storage):
+    location = settings.MEDIAFILES_FOLDER
+```
+
+```py
+# urls.py
+from django.conf import settings
+from django.contrib import admin
+from django.conf.urls.static import static
+from django.urls import path, include
+
+urlpatterns = [
+    path('profile/', include("profile.urls")),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT) \
+  + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+```
+
+[Creating Virtual Environments](https://docs.python.org/3/library/venv.html#creating-virtual-environments)
+
+```bash
+python manage.py collectstatic
+# python -m pip freeze > requirements.txt
+python -m venv django_101_VM
+python -m pip install Django Pillow psycopg2-binary django-storages boto3 # install inside the VM
+python -m pip freeze > requirements.txt # run inside the VM
+# for elastic beanstalk
+# create a folder/file -> .ebextensions/{djangoconfig, static-files.config}
+```
+
+```
+// .ebextensions/djangoconfig
+option_settings:
+    aws:eleasticbeanstalk:container:python:
+        WSGIPath: <PROJECT_NAME>.wsgi:application
+
+// .ebextensions/static-files.config
+option_settings:
+    aws:eleasticbeanstalk:environment:proxy:staticfiles:
+        /static: staticfiles
+        /files: uploads
+```
+
+### Files & Folder to Upload
+
+ZIP these and upload to elastic beanstalk
+
+- uploads/
+- templates/
+- staticfiles/
+- <PROJECT_NAME_FOLDER>/
+- <APP_FOLDERS>/
+- .ebextensions/
+- manage.py
+- db.sqlite3
+
+Configure more options
+Edit and add the Environment Variables and the database
+Save and create app
